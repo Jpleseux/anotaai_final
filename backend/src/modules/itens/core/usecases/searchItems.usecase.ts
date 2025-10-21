@@ -4,8 +4,8 @@ import { PaginationParams } from "../../../lists/core/listRepository.interface";
 export class SearchItemsUsecase {
   constructor(private repository: ItemRepositoryInterface) {}
 
-  async execute(userId: string, searchTerm: string, pagination?: PaginationParams) {
-    const result = await this.repository.searchItems(userId, searchTerm, pagination);
+  async execute(userId: string, pagination?: PaginationParams) {
+    const result = await this.repository.searchItems(userId, pagination);
     return {
       ...result,
       data: result.data.map((item) => item.output())

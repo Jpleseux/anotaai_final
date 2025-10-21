@@ -1,6 +1,10 @@
 import { DataSource } from "typeorm";
 import { config } from "dotenv";
 import { join } from "path";
+import { ListModel } from "../../modules/lists/infra/database/models/List.model";
+import { ListItemModel } from "../../modules/lists/infra/database/models/ListItem.model";
+import { UserModel } from "../../modules/auth/infra/database/models/User.model";
+import { ItemModel } from "../../modules/itens/infra/database/models/Item.model";
 
 // Load environment variables
 config();
@@ -16,7 +20,7 @@ const AppDataSource = new DataSource({
   database: process.env.DB_NAME || "anotaai",
   synchronize: false,
   logging: process.env.NODE_ENV === "development",
-  entities: [join(process.cwd(), "/src/**/*.model.{ts,js}")],
+  entities: [ListModel, ListItemModel, UserModel, ItemModel ],
   migrations: [join(process.cwd(), "/src/**/*.migration.{ts,js}")],
 });
 

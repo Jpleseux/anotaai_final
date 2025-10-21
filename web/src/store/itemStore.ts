@@ -8,10 +8,10 @@ interface ItemState {
   isLoading: boolean;
   error: string | null;
   fetchItems: (listId?: string) => Promise<void>;
-  fetchItem: (id: string) => Promise<void>;
+  fetchItem: (uuid: string) => Promise<void>;
   createItem: (data: CreateItemRequest) => Promise<Item>;
-  updateItem: (id: string, data: UpdateItemRequest) => Promise<Item>;
-  deleteItem: (id: string) => Promise<void>;
+  updateItem: (uuid: string, data: UpdateItemRequest) => Promise<Item>;
+  deleteItem: (uuid: string) => Promise<void>;
 }
 
 export const useItemStore = create<ItemState>((set) => ({
@@ -34,11 +34,11 @@ export const useItemStore = create<ItemState>((set) => ({
     }
   },
 
-  fetchItem: async (id: string) => {
+  fetchItem: async (uuid: string) => {
     set({ isLoading: true, error: null });
 
     try {
-      const item = await itemService.getItem(id);
+      const item = await itemService.getItem(uuid);
       set({ currentItem: item, isLoading: false });
     } catch (error: any) {
       set({ 
@@ -67,17 +67,17 @@ export const useItemStore = create<ItemState>((set) => ({
     }
   },
 
-  updateItem: async (id: string, data: UpdateItemRequest) => {
+  updateItem: async (uuid: string, data: UpdateItemRequest) => {
     set({ isLoading: true, error: null });
 
     try {
-      const updatedItem = await itemService.updateItem(id, data);
+      const updatedItem = await itemService.updateItem(uuid, data);
       
       set(state => ({
         items: state.items.map(item => 
-          item.id === id ? updatedItem : item
+          item.uuid === uuid ? updatedItem : item
         ),
-        currentItem: state.currentItem?.id === id 
+        currentItem: state.currentItem?.uuid === uuid 
           ? updatedItem 
           : state.currentItem,
         isLoading: false
@@ -93,15 +93,15 @@ export const useItemStore = create<ItemState>((set) => ({
     }
   },
 
-  deleteItem: async (id: string) => {
+  deleteItem: async (uuid: string) => {
     set({ isLoading: true, error: null });
 
     try {
-      await itemService.deleteItem(id);
+      await itemService.deleteItem(uuid);
       
       set(state => ({
-        items: state.items.filter(item => item.id !== id),
-        currentItem: state.currentItem?.id === id 
+        items: state.items.filter(item => item.uuid !== uuid),
+        currentItem: state.currentItem?.uuid === uuid 
           ? null 
           : state.currentItem,
         isLoading: false

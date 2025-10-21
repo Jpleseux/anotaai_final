@@ -8,10 +8,10 @@ interface ListState {
   isLoading: boolean;
   error: string | null;
   fetchLists: () => Promise<void>;
-  fetchList: (id: string) => Promise<void>;
+  fetchList: (uuid: string) => Promise<void>;
   createList: (data: CreateListRequest) => Promise<List>;
-  updateList: (id: string, data: UpdateListRequest) => Promise<List>;
-  deleteList: (id: string) => Promise<void>;
+  updateList: (uuid: string, data: UpdateListRequest) => Promise<List>;
+  deleteList: (uuid: string) => Promise<void>;
 }
 
 export const useListStore = create<ListState>((set, get) => ({
@@ -34,11 +34,11 @@ export const useListStore = create<ListState>((set, get) => ({
     }
   },
 
-  fetchList: async (id: string) => {
+  fetchList: async (uuid: string) => {
     set({ isLoading: true, error: null });
 
     try {
-      const list = await listService.getList(id);
+      const list = await listService.getList(uuid);
       set({ currentList: list, isLoading: false });
     } catch (error: any) {
       set({ 
@@ -67,17 +67,17 @@ export const useListStore = create<ListState>((set, get) => ({
     }
   },
 
-  updateList: async (id: string, data: UpdateListRequest) => {
+  updateList: async (uuid: string, data: UpdateListRequest) => {
     set({ isLoading: true, error: null });
 
     try {
-      const updatedList = await listService.updateList(id, data);
+      const updatedList = await listService.updateList(uuid, data);
       
       set(state => ({
         lists: state.lists.map(list => 
-          list.id === id ? updatedList : list
+          list.uuid === uuid ? updatedList : list
         ),
-        currentList: state.currentList?.id === id 
+        currentList: state.currentList?.uuid === uuid 
           ? updatedList 
           : state.currentList,
         isLoading: false
@@ -93,15 +93,15 @@ export const useListStore = create<ListState>((set, get) => ({
     }
   },
 
-  deleteList: async (id: string) => {
+  deleteList: async (uuid: string) => {
     set({ isLoading: true, error: null });
 
     try {
-      await listService.deleteList(id);
+      await listService.deleteList(uuid);
       
       set(state => ({
-        lists: state.lists.filter(list => list.id !== id),
-        currentList: state.currentList?.id === id 
+        lists: state.lists.filter(list => list.uuid !== uuid),
+        currentList: state.currentList?.uuid === uuid 
           ? null 
           : state.currentList,
         isLoading: false

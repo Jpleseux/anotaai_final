@@ -8,7 +8,8 @@ import {
   KeyboardAvoidingView, 
   Platform,
   TouchableWithoutFeedback,
-  Keyboard
+  Keyboard,
+  ScrollView
 } from 'react-native';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -17,9 +18,13 @@ import { X } from 'lucide-react-native';
 interface CreateItemModalProps {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (name: string) => void;
+  onSubmit: (data: { name: string; description: string; value: number }) => void;
   isLoading: boolean;
-  initialValue?: string;
+  initialValue?: {
+    name?: string;
+    description?: string;
+    value?: number;
+  };
   isEditing?: boolean;
 }
 
@@ -28,25 +33,56 @@ const CreateItemModal: React.FC<CreateItemModalProps> = ({
   onClose,
   onSubmit,
   isLoading,
-  initialValue = '',
+  initialValue = { name: '', description: '', value: 0 },
   isEditing = false
 }) => {
-  const [name, setName] = useState(initialValue);
-  const [error, setError] = useState('');
+  const [name, setName] = useState(initialValue?.name ?? '');
+  const [description, setDescription] = useState(initialValue?.description ?? '');
+  const [value, setValue] = useState((initialValue?.value ?? 0).toString());
+  const [errors, setErrors] = useState<{
+    name?: string;
+    description?: string;
+    value?: string;
+  }>({});
 
   const handleSubmit = () => {
+    const newErrors: typeof errors = {};
+    
     if (!name.trim()) {
-      setError('Item name is required');
+      newErrors.name = 'Item name is required';
+    }
+    
+    if (!description.trim()) {
+      newErrors.description = 'Description is required';
+    }
+    
+    if (!value.trim()) {
+      newErrors.value = 'Value is required';
+    } else {
+      const numValue = parseFloat(value);
+      if (isNaN(numValue)) {
+        newErrors.value = 'Value must be a number';
+      }
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
     
-    setError('');
-    onSubmit(name);
+    setErrors({});
+    onSubmit({
+      name: name.trim(),
+      description: description.trim(),
+      value: parseFloat(value)
+    });
   };
 
   const handleClose = () => {
-    setName(initialValue);
-    setError('');
+    setName(initialValue?.name ?? '');
+    setDescription(initialValue?.description ?? '');
+    setValue((initialValue?.value ?? 0).toString());
+    setErrors({});
     onClose();
   };
 
@@ -72,14 +108,34 @@ const CreateItemModal: React.FC<CreateItemModalProps> = ({
               </TouchableOpacity>
             </View>
             
-            <View style={styles.modalContent}>
+            <ScrollView style={styles.modalContent}>
               <Input
                 label="Item Name"
                 placeholder="Enter item name"
                 value={name}
                 onChangeText={setName}
-                error={error}
+                error={errors.name}
                 autoFocus
+              />
+              
+              <Input
+                label="Description"
+                placeholder="Enter item description"
+                value={description}
+                onChangeText={setDescription}
+                error={errors.description}
+                multiline
+                numberOfLines={3}
+                style={styles.descriptionInput}
+              />
+              
+              <Input
+                label="Value"
+                placeholder="Enter item value"
+                value={value}
+                onChangeText={setValue}
+                error={errors.value}
+                keyboardType="numeric"
               />
               
               <View style={styles.buttonContainer}>
@@ -97,7 +153,7 @@ const CreateItemModal: React.FC<CreateItemModalProps> = ({
                   style={styles.submitButton}
                 />
               </View>
-            </View>
+            </ScrollView>
           </View>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
@@ -115,6 +171,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     width: '90%',
     maxWidth: 400,
+    maxHeight: '80%',
     backgroundColor: 'white',
     borderRadius: 12,
     overflow: 'hidden',
@@ -138,6 +195,9 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     padding: 20,
+  },
+  descriptionInput: {
+    marginVertical: 12,
   },
   buttonContainer: {
     flexDirection: 'row',

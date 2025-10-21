@@ -5,6 +5,7 @@ import { UpdateListUsecase } from "../../modules/lists/core/usecases/updateList.
 import { DeleteListUsecase } from "../../modules/lists/core/usecases/deleteList.usecase";
 import { ListUserListsUsecase } from "../../modules/lists/core/usecases/listUserLists.usecase";
 import { AddItemToListUsecase } from "../../modules/lists/core/usecases/addItemToList.usecase";
+import {FindListByUuidUsecase} from "../../modules/lists/core/usecases/listUserListByUuidUsecase"
 /**
  * @openapi
  * /lists:
@@ -41,7 +42,8 @@ export class ListController {
     private updateListUsecase: UpdateListUsecase,
     private deleteListUsecase: DeleteListUsecase,
     private listUserListsUsecase: ListUserListsUsecase,
-    private addItemToListUsecase: AddItemToListUsecase
+    private addItemToListUsecase: AddItemToListUsecase,
+    private findListByUuidUsecase: FindListByUuidUsecase
   ) {}
 
   async createList(req: Request, res: Response): Promise<Response> {
@@ -49,8 +51,8 @@ export class ListController {
       const { name, description } = req.body;
       const userId = req.user.uuid;
 
-      if (!name || !description) {
-        return res.status(400).json({ error: "Todos os campos são obrigatórios" });
+      if (!name) {
+        return res.status(400).json({ error: "O nome da lista é obrigatório" });
       }
 
       await this.createListUsecase.execute({
@@ -186,6 +188,17 @@ export class ListController {
       const userId = req.user.uuid;
 
       const lists = await this.listUserListsUsecase.execute(userId);
+
+      return res.json(lists);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+    async listUserListByUuid(req: Request, res: Response): Promise<Response> {
+    try {
+      const userId = req.params.uuid;
+
+      const lists = await this.findListByUuidUsecase.execute(userId);
 
       return res.json(lists);
     } catch (error) {

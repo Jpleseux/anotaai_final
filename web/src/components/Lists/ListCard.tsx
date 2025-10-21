@@ -14,7 +14,7 @@ const ListCard: React.FC<ListCardProps> = ({ list }) => {
   const itemCount = list.items?.length || 0;
 
   const handleClick = () => {
-    navigate(`/lists/${list.id}`);
+    navigate(`/lists/${list.uuid}`);
   };
 
   return (

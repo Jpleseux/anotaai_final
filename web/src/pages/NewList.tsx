@@ -15,7 +15,7 @@ const NewList: React.FC = () => {
     try {
       const newList = await createList(data);
       toast.success('Lista criada com sucesso!');
-      navigate(`/lists/${newList.id}`);
+      navigate(`/lists/${newList.uuid}`);
     } catch (error: any) {
       toast.error(error.message || 'Erro ao criar lista');
     }

@@ -91,10 +91,15 @@ export default function ListDetailScreen() {
   };
 
   // Create a new item
-  const handleCreateItem = async (name: string) => {
+  const handleCreateItem = async (data: { name: string; description: string; value: number }) => {
     setIsSubmitting(true);
     try {
-      await createItem({ name, listId: id });
+      await createItem({ 
+        name: data.name, 
+        description: data.description, 
+        value: data.value,
+        listId: id 
+      });
       setIsCreateModalVisible(false);
       fetchItems();
     } catch (error: any) {
@@ -105,12 +110,16 @@ export default function ListDetailScreen() {
   };
 
   // Update an existing item
-  const handleUpdateItem = async (name: string) => {
+  const handleUpdateItem = async (data: { name: string; description: string; value: number }) => {
     if (!selectedItem) return;
     
     setIsSubmitting(true);
     try {
-      await updateItem(selectedItem.id, { name });
+      await updateItem(selectedItem.uuid, { 
+        name: data.name,
+        description: data.description,
+        value: data.value
+      });
       setIsEditModalVisible(false);
       setSelectedItem(null);
       fetchItems();
@@ -133,7 +142,7 @@ export default function ListDetailScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteItem(item.id);
+              await deleteItem(item.uuid);
               fetchItems();
             } catch (error: any) {
               Alert.alert('Error', error.message || 'Failed to delete item');
@@ -173,7 +182,7 @@ export default function ListDetailScreen() {
       ) : (
         <FlatList
           data={items}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.uuid}
           renderItem={({ item }) => (
             <ItemCard
               item={item}
@@ -218,7 +227,11 @@ export default function ListDetailScreen() {
         }}
         onSubmit={handleUpdateItem}
         isLoading={isSubmitting}
-        initialValue={selectedItem?.name || ''}
+        initialValue={selectedItem ? {
+          name: selectedItem.name,
+          description: selectedItem.description,
+          value: selectedItem.value
+        } : undefined}
         isEditing
       />
     </View>

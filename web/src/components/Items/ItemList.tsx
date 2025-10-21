@@ -6,8 +6,8 @@ import { Trash2, Edit } from 'lucide-react';
 
 interface ItemListProps {
   items: Item[];
-  onDeleteItem: (id: string) => void;
-  onEditItem: (id: string, name: string) => void;
+  onDeleteItem: (uuid: string) => void;
+  onEditItem: (uuid: string, name: string) => void;
   isLoading?: boolean;
 }
 
@@ -21,7 +21,7 @@ const ItemList: React.FC<ItemListProps> = ({
   const [editingName, setEditingName] = useState('');
 
   const handleEditClick = (item: Item) => {
-    setEditingItemId(item.id);
+    setEditingItemId(item.uuid);
     setEditingName(item.name);
   };
 
@@ -30,9 +30,9 @@ const ItemList: React.FC<ItemListProps> = ({
     setEditingName('');
   };
 
-  const handleSaveEdit = (id: string) => {
+  const handleSaveEdit = (uuid: string) => {
     if (editingName.trim()) {
-      onEditItem(id, editingName);
+      onEditItem(uuid, editingName);
       setEditingItemId(null);
       setEditingName('');
     }
@@ -56,10 +56,10 @@ const ItemList: React.FC<ItemListProps> = ({
       <ul className="divide-y divide-gray-200 border border-gray-200 rounded-md overflow-hidden">
         {items.map((item) => (
           <li 
-            key={item.id} 
+            key={item.uuid} 
             className="bg-white p-4 hover:bg-gray-50 transition-colors"
           >
-            {editingItemId === item.id ? (
+            {editingItemId === item.uuid ? (
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -71,7 +71,7 @@ const ItemList: React.FC<ItemListProps> = ({
                 <div className="flex gap-2">
                   <Button 
                     size="sm" 
-                    onClick={() => handleSaveEdit(item.id)}
+                    onClick={() => handleSaveEdit(item.uuid)}
                     isLoading={isLoading}
                   >
                     Salvar
@@ -99,7 +99,7 @@ const ItemList: React.FC<ItemListProps> = ({
                     <Edit size={18} />
                   </button>
                   <button
-                    onClick={() => onDeleteItem(item.id)}
+                    onClick={() => onDeleteItem(item.uuid)}
                     className="text-gray-400 hover:text-red-600 p-1 rounded-full hover:bg-gray-100"
                     disabled={isLoading}
                   >

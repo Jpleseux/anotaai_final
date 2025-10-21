@@ -8,6 +8,7 @@ import { AddItemToListUsecase } from "../../modules/lists/core/usecases/addItemT
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { ListRepository } from "../../modules/lists/infra/repository/ListRepository";
 import AppDataSource from "../../infrastructure/database/config";
+import { FindListByUuidUsecase } from "../../modules/lists/core/usecases/listUserListByUuidUsecase";
 
 const listRoutes = Router();
 const listRepository = new ListRepository(AppDataSource);
@@ -16,12 +17,14 @@ const updateListUsecase = new UpdateListUsecase(listRepository);
 const deleteListUsecase = new DeleteListUsecase(listRepository);
 const listUserListsUsecase = new ListUserListsUsecase(listRepository);
 const addItemToListUsecase = new AddItemToListUsecase(listRepository);
+const findListByUuidUsecase = new FindListByUuidUsecase(listRepository);
 const listController = new ListController(
   createListUsecase,
   updateListUsecase,
   deleteListUsecase,
   listUserListsUsecase,
-  addItemToListUsecase
+  addItemToListUsecase,
+  findListByUuidUsecase,
 );
 
 listRoutes.use(authMiddleware);
@@ -30,6 +33,7 @@ listRoutes.post("/", (req, res) => listController.createList(req, res));
 listRoutes.put("/:uuid", (req, res) => listController.updateList(req, res));
 listRoutes.delete("/:uuid", (req, res) => listController.deleteList(req, res));
 listRoutes.get("/", (req, res) => listController.listUserLists(req, res));
+listRoutes.get("/:uuid", (req, res) => listController.listUserListByUuid(req, res));
 listRoutes.post("/:uuid/items", (req, res) => listController.addItemToList(req, res));
 
 export { listRoutes }; 

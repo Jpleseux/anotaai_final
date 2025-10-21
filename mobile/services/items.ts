@@ -2,27 +2,36 @@ import api from './api';
 
 // Types
 export type Item = {
-  id: string;
+  uuid: string;
   name: string;
+  description: string;
+  value: number;
   listId: string;
+  userId: string;
   createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
 };
 
 export type CreateItemParams = {
   name: string;
+  description: string;
+  value: number;
   listId: string;
 };
 
 export type UpdateItemParams = {
   name?: string;
+  description?: string;
+  value?: number;
   listId?: string;
 };
 
 // Get all items
 export const getItems = async (): Promise<Item[]> => {
   try {
-    const response = await api.get<Item[]>('/items');
-    return response.data;
+    const response = await api.get<{data: Item[]}>('items');
+    return response.data.data;
   } catch (error) {
     throw error;
   }
@@ -31,19 +40,18 @@ export const getItems = async (): Promise<Item[]> => {
 // Get items for a specific list
 export const getItemsByList = async (listId: string): Promise<Item[]> => {
   try {
-    const response = await api.get<Item[]>('/items');
-    // Filter items by listId since API doesn't provide direct endpoint
-    return response.data.filter(item => item.listId === listId);
+    const response = await api.get<{data: Item[]}>(`items/list/${listId}`);
+    return response.data.data;
   } catch (error) {
     throw error;
   }
 };
 
 // Get a specific item
-export const getItem = async (id: string): Promise<Item> => {
+export const getItem = async (uuid: string): Promise<Item> => {
   try {
-    const response = await api.get<Item>(`/api/items/${id}`);
-    return response.data;
+    const response = await api.get<{data: Item}>(`items/${uuid}`);
+    return response.data.data;
   } catch (error) {
     throw error;
   }
@@ -52,27 +60,27 @@ export const getItem = async (id: string): Promise<Item> => {
 // Create a new item
 export const createItem = async (params: CreateItemParams): Promise<Item> => {
   try {
-    const response = await api.post<Item>('/items', params);
-    return response.data;
+    const response = await api.post<{data: Item}>('items', params);
+    return response.data.data;
   } catch (error) {
     throw error;
   }
 };
 
 // Update an item
-export const updateItem = async (id: string, params: UpdateItemParams): Promise<Item> => {
+export const updateItem = async (uuid: string, params: UpdateItemParams): Promise<Item> => {
   try {
-    const response = await api.put<Item>(`/api/items/${id}`, params);
-    return response.data;
+    const response = await api.put<{data: Item}>(`items/${uuid}`, params);
+    return response.data.data;
   } catch (error) {
     throw error;
   }
 };
 
 // Delete an item
-export const deleteItem = async (id: string): Promise<void> => {
+export const deleteItem = async (uuid: string): Promise<void> => {
   try {
-    await api.delete(`/api/items/${id}`);
+    await api.delete(`items/${uuid}`);
   } catch (error) {
     throw error;
   }

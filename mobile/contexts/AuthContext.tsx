@@ -6,7 +6,7 @@ import { login, register } from '@/services/auth';
 
 // Define types
 type User = {
-  id: string;
+  uuid: string;
   name: string;
   email: string;
 };

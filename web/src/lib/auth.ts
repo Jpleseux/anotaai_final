@@ -64,7 +64,7 @@ export const getCurrentUser = (): User | null => {
     const decodedToken = jwtDecode<DecodedToken>(token);
     
     return {
-      id: decodedToken.sub,
+      uuid: decodedToken.sub,
       name: decodedToken.name,
       email: decodedToken.email,
     };

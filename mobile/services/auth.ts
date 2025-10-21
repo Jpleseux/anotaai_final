@@ -4,7 +4,7 @@ import api from './api';
 type LoginResponse = {
   token: string;
   user: {
-    id: string;
+    uuid: string;
     name: string;
     email: string;
   };
@@ -27,7 +27,7 @@ export const login = async (email: string, password: string) => {
     // Mock user data since the API doesn't return user info with the token
     // In a real app, you'd either get this from the API or decode from JWT
     const user = {
-      id: '1', // This would normally come from the API or JWT
+      uuid: '1', // This would normally come from the API or JWT
       name: email.split('@')[0], // Use part of email as name for demo
       email,
     };

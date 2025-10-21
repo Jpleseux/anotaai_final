@@ -6,7 +6,7 @@ import { CreateItemInput } from "../types/types";
 export class CreateItemUsecase {
   constructor(private repository: ItemRepositoryInterface) {}
 
-  public async execute(input: CreateItemInput): Promise<void> {
+  public async execute(input: CreateItemInput, listId: string): Promise<void> {
     await this.validateInput(input);
 
     const item = new ItemEntity({
@@ -17,7 +17,7 @@ export class CreateItemUsecase {
       userId: input.userId,
     });
 
-    await this.repository.saveItem(item);
+    await this.repository.saveItem(item, listId);
   }
 
   private async validateInput(input: CreateItemInput): Promise<void> {

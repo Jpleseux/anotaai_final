@@ -51,7 +51,7 @@ const Navbar: React.FC = () => {
                   <button 
                     type="button" 
                     className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500" 
-                    id="user-menu" 
+                    uuid="user-menu" 
                     aria-expanded="false" 
                     aria-haspopup="true"
                     onClick={toggleMenu}

@@ -15,21 +15,21 @@ export interface RegisterRequest {
 }
 
 export interface RegisterResponse {
-  id: string;
+  uuid: string;
   name: string;
   email: string;
 }
 
 // User types
 export interface User {
-  id: string;
+  uuid: string;
   name: string;
   email: string;
 }
 
 // List types
 export interface List {
-  id: string;
+  uuid: string;
   name: string;
   createdAt: string;
   items?: Item[];
@@ -45,7 +45,7 @@ export interface UpdateListRequest {
 
 // Item types
 export interface Item {
-  id: string;
+  uuid: string;
   name: string;
   listId: string;
   createdAt: string;

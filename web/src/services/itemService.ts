@@ -11,9 +11,9 @@ export const getItems = async (listId?: string): Promise<Item[]> => {
   return await get<Item[]>(`/items${query}`);
 };
 
-// Get a specific item by ID
-export const getItem = async (id: string): Promise<Item> => {
-  return await get<Item>(`/items/${id}`);
+// Get a specific item by uuid
+export const getItem = async (uuid: string): Promise<Item> => {
+  return await get<Item>(`/items/${uuid}`);
 };
 
 // Create a new item
@@ -22,11 +22,11 @@ export const createItem = async (item: CreateItemRequest): Promise<Item> => {
 };
 
 // Update an item
-export const updateItem = async (id: string, item: UpdateItemRequest): Promise<Item> => {
-  return await put<Item>(`/items/${id}`, item);
+export const updateItem = async (uuid: string, item: UpdateItemRequest): Promise<Item> => {
+  return await put<Item>(`/items/${uuid}`, item);
 };
 
 // Delete an item
-export const deleteItem = async (id: string): Promise<void> => {
-  await del(`/items/${id}`);
+export const deleteItem = async (uuid: string): Promise<void> => {
+  await del(`/items/${uuid}`);
 };

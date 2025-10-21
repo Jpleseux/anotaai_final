@@ -46,7 +46,7 @@ const App: React.FC = () => {
         >
           <Route index element={<Home />} />
           <Route path="new-list" element={<NewList />} />
-          <Route path="lists/:id" element={<ListDetail />} />
+          <Route path="lists/:uuid" element={<ListDetail />} />
         </Route>
         
         {/* Fallback route */}

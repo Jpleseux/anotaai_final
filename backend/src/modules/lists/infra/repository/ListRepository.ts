@@ -60,12 +60,12 @@ export class ListRepository implements ListRepositoryInterface {
   }
 
   async findListByUuid(uuid: string): Promise<ListEntity> {
+    console.log(uuid)
     const listDb = await this.dataSource
       .getRepository(ListModel)
       .createQueryBuilder("list")
-      .where("list.uuid = :uuid", { uuid })
+      .where("list.uuid = :uuid", { uuid: uuid })
       .getOne();
-
     if (!listDb) {
       return null;
     }
@@ -73,14 +73,14 @@ export class ListRepository implements ListRepositoryInterface {
     const items = await this.dataSource
       .getRepository(ListItemModel)
       .createQueryBuilder("list_item")
-      .innerJoinAndSelect("items", "item", "item.uuid = list_item.item_id")
+      .innerJoinAndSelect("list_item.item", "item")
       .where("list_item.list_id = :listId", { listId: uuid })
       .getMany();
 
     const itemEntities = items.map(
       (item) =>
         new ItemEntity({
-          uuid: item.item_id,
+          uuid: item.item.uuid,
           name: item.item.name,
           description: item.item.description,
           value: item.item.value,
@@ -118,14 +118,14 @@ export class ListRepository implements ListRepositoryInterface {
         const items = await this.dataSource
           .getRepository(ListItemModel)
           .createQueryBuilder("list_item")
-          .innerJoinAndSelect("items", "item", "item.uuid = list_item.item_id")
+          .innerJoinAndSelect("list_item.item", "item")
           .where("list_item.list_id = :listId", { listId: list.uuid })
           .getMany();
 
         const itemEntities = items.map(
           (item) =>
             new ItemEntity({
-              uuid: item.item_id,
+              uuid: item.item.uuid,
               name: item.item.name,
               description: item.item.description,
               value: item.item.value,

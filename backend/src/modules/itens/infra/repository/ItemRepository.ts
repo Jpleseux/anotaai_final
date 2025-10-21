@@ -2,12 +2,13 @@ import { DataSource } from "typeorm";
 import { ItemRepositoryInterface } from "../../core/itemRepository.interface";
 import { ItemEntity } from "../../core/entities/item.entity";
 import { ItemModel } from "../database/models/Item.model";
-import { PaginationParams, PaginatedResponse } from "../../../lists/core/listRepository.interface";
+import { PaginationParams } from "../../../lists/core/listRepository.interface";
+import { ListItemModel } from "../../../lists/infra/database/models/ListItem.model";
 
 export class ItemRepository implements ItemRepositoryInterface {
   constructor(private readonly dataSource: DataSource) {}
 
-  async saveItem(item: ItemEntity): Promise<void> {
+  async saveItem(item: ItemEntity, listId: string): Promise<void> {
     await this.dataSource
       .createQueryBuilder()
       .insert()
@@ -19,6 +20,17 @@ export class ItemRepository implements ItemRepositoryInterface {
           description: item.description,
           value: item.value,
           user_id: item.userId,
+        },
+      ])
+      .execute();
+    await this.dataSource
+      .createQueryBuilder()
+      .insert()
+      .into(ListItemModel)
+      .values([
+        {
+          item_id: item.uuid,
+          list_id: listId,
         },
       ])
       .execute();
@@ -69,20 +81,16 @@ export class ItemRepository implements ItemRepositoryInterface {
     });
   }
 
-  async findAllItemsByUserId(userId: string, pagination?: PaginationParams): Promise<PaginatedResponse<ItemEntity>> {
-    const page = pagination?.page || 1;
-    const limit = pagination?.limit || 10;
-    const skip = (page - 1) * limit;
-
-    const [itemsDb, total] = await this.dataSource
+  async findItemsByList(listId: string, userId: string): Promise<ItemEntity[]> {
+    const itemsDb = await this.dataSource
       .getRepository(ItemModel)
       .createQueryBuilder("item")
-      .where("item.user_id = :userId", { userId })
-      .skip(skip)
-      .take(limit)
-      .getManyAndCount();
+      .innerJoin(ListItemModel, "list_item", "list_item.item_id = item.uuid")
+      .where("list_item.list_id = :listId", { listId })
+      .andWhere("item.user_id = :userId", { userId })
+      .getMany();
 
-    const items = itemsDb.map(
+    return itemsDb.map(
       (item) =>
         new ItemEntity({
           uuid: item.uuid,
@@ -95,17 +103,15 @@ export class ItemRepository implements ItemRepositoryInterface {
           deletedAt: item.deleted_at,
         })
     );
-
-    return {
-      data: items,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit)
-    };
   }
 
-  async searchItems(userId: string, searchTerm: string, pagination?: PaginationParams): Promise<PaginatedResponse<ItemEntity>> {
+  async searchItems(userId: string, pagination?: PaginationParams): Promise<{
+    data: ItemEntity[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     const page = pagination?.page || 1;
     const limit = pagination?.limit || 10;
     const skip = (page - 1) * limit;
@@ -114,9 +120,6 @@ export class ItemRepository implements ItemRepositoryInterface {
       .getRepository(ItemModel)
       .createQueryBuilder("item")
       .where("item.user_id = :userId", { userId })
-      .andWhere("(item.name ILIKE :searchTerm OR item.description ILIKE :searchTerm)", {
-        searchTerm: `%${searchTerm}%`,
-      })
       .skip(skip)
       .take(limit)
       .getManyAndCount();

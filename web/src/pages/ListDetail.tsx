@@ -18,7 +18,7 @@ import ItemForm from '../components/Items/ItemForm';
 import ItemList from '../components/Items/ItemList';
 
 const ListDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { uuid } = useParams<{ uuid: string }>();
   const navigate = useNavigate();
   const { currentList, isLoading: listLoading, fetchList, updateList, deleteList } = useListStore();
   const { 
@@ -35,16 +35,16 @@ const ListDetail: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      fetchList(id);
+    if (uuid) {
+      fetchList(uuid);
     }
-  }, [id, fetchList]);
+  }, [uuid, fetchList]);
 
   useEffect(() => {
-    if (id) {
-      fetchItems(id);
+    if (uuid) {
+      fetchItems(uuid);
     }
-  }, [id, fetchItems]);
+  }, [uuid, fetchItems]);
 
   useEffect(() => {
     if (currentList) {
@@ -64,10 +64,10 @@ const ListDetail: React.FC = () => {
   };
 
   const handleSaveEditing = async () => {
-    if (!id || !listName.trim()) return;
+    if (!uuid || !listName.trim()) return;
 
     try {
-      await updateList(id, { name: listName });
+      await updateList(uuid, { name: listName });
       setIsEditing(false);
       toast.success('Lista atualizada com sucesso!');
     } catch (error: any) {
@@ -76,10 +76,10 @@ const ListDetail: React.FC = () => {
   };
 
   const handleDeleteList = async () => {
-    if (!id) return;
+    if (!uuid) return;
 
     try {
-      await deleteList(id);
+      await deleteList(uuid);
       toast.success('Lista excluída com sucesso!');
       navigate('/');
     } catch (error: any) {
@@ -90,12 +90,12 @@ const ListDetail: React.FC = () => {
   };
 
   const handleAddItem = async (data: Omit<CreateItemRequest, 'listId'>) => {
-    if (!id) return;
+    if (!uuid) return;
 
     try {
       await createItem({
         ...data,
-        listId: id
+        listId: uuid
       });
       toast.success('Item adicionado com sucesso!');
     } catch (error: any) {
@@ -113,12 +113,12 @@ const ListDetail: React.FC = () => {
   };
 
   const handleEditItem = async (itemId: string, name: string) => {
-    if (!id) return;
+    if (!uuid) return;
 
     try {
       await updateItem(itemId, {
         name,
-        listId: id
+        listId: uuid
       });
       toast.success('Item atualizado com sucesso!');
     } catch (error: any) {

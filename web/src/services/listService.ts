@@ -10,9 +10,9 @@ export const getLists = async (): Promise<List[]> => {
   return await get<List[]>('/lists');
 };
 
-// Get a specific list by ID
-export const getList = async (id: string): Promise<List> => {
-  return await get<List>(`/lists/${id}`);
+// Get a specific list by uuid
+export const getList = async (uuid: string): Promise<List> => {
+  return await get<List>(`/lists/${uuid}`);
 };
 
 // Create a new list
@@ -21,11 +21,11 @@ export const createList = async (list: CreateListRequest): Promise<List> => {
 };
 
 // Update a list
-export const updateList = async (id: string, list: UpdateListRequest): Promise<List> => {
-  return await put<List>(`/lists/${id}`, list);
+export const updateList = async (uuid: string, list: UpdateListRequest): Promise<List> => {
+  return await put<List>(`/lists/${uuid}`, list);
 };
 
 // Delete a list
-export const deleteList = async (id: string): Promise<void> => {
-  await del(`/lists/${id}`);
+export const deleteList = async (uuid: string): Promise<void> => {
+  await del(`/lists/${uuid}`);
 };

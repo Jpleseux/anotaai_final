@@ -37,7 +37,7 @@ export default function RootLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(auth)" options={{ animation: 'fade' }} />
         <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
-        <Stack.Screen name="list/[id]" options={{ animation: 'slide_from_right' }} />
+        <Stack.Screen name="list/[uuid]" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="+not-found" options={{ presentation: 'modal' }} />
       </Stack>
     </AuthProvider>

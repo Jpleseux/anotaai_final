@@ -94,7 +94,7 @@ export default function HomeScreen() {
     
     setIsSubmitting(true);
     try {
-      await updateList(selectedList.id, { name });
+      await updateList(selectedList.uuid, { name });
       setIsEditModalVisible(false);
       setSelectedList(null);
       fetchLists();
@@ -117,7 +117,7 @@ export default function HomeScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await deleteList(list.id);
+              await deleteList(list.uuid);
               fetchLists();
             } catch (error: any) {
               Alert.alert('Error', error.message || 'Failed to delete list');
@@ -150,7 +150,7 @@ export default function HomeScreen() {
       ) : (
         <FlatList
           data={lists}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.uuid}
           renderItem={({ item }) => (
             <ListCard
               list={item}

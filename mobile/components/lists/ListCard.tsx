@@ -19,7 +19,11 @@ const ListCard: React.FC<ListCardProps> = ({ list, onEdit, onDelete }) => {
   });
 
   const handlePress = () => {
-    router.push(`/list/${list.id}`);
+    console.log(`/list/${list.uuid}`)
+    router.push({
+      pathname: "/list/[id]",
+      params: { id: list.uuid }
+    });
   };
 
   return (
